@@ -1,23 +1,18 @@
-import logo from './logo.svg';
+
 import './App.css';
+import NewFile from './NewFile';
+import Header from './components/Header';
+// import Workfile from './Workfile';
+import Timezone from './components/Timezone';
+import WorkingDays from './components/WorkingDays';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div >
+      <Header />
+      <Timezone />
+      <WorkingDays />
+      <NewFile />
     </div>
   );
 }
