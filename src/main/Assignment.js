@@ -26,7 +26,7 @@ const WorkFile = () => {
   const startOfWeekday = moment().startOf("isoWeek").add(2, "days");
   const weekday = [];
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 1; i < 6; i++) {
     weekday.push(
       startOfWeekday
         .clone()
@@ -74,7 +74,7 @@ const WorkFile = () => {
 
   return (
     <div>
-      {/* Week and date section */}
+      {/* Week and date section started */}
       <div className="flex justify-between mx-5 my-1 py-2 border border-gray-300">
         <div className="flex cursor-pointer ">
           <span>
@@ -104,7 +104,7 @@ const WorkFile = () => {
       </div>
       {/* Week and date section end */}
 
-      {/* Time zone section */}
+      {/* Time zone section started */}
       <div className="flex flex-col px-5 mt-5">
         <label className="font-bold" htmlFor="timezone">
           Timezone:
@@ -122,35 +122,40 @@ const WorkFile = () => {
 
       {/* Time zone section end */}
 
-      {/* Working Day Section */}
-      <div className="flex border border-collapse m-5 border-gray-300 py-2 px-2">
+
+      {/* Working Day Section started */}
+      <div className="flex border border-collapse m-5 border-gray-300 py-2 px-2 h-[100%]">
         <div>
-          {weeklyWorkingDays.map((day, index) => {
-            const formattedDate = moment(day).format("MM/DD");
+          {weeklyWorkingDays.slice(0, 5).map((day, index) => {
+            const formattedDate = moment(day).add(1, 'day').format("MM/DD");
             return (
               <div key={index} className="flex">
-                <div className="w-[6%] flex ml-4 flex-col items-center justify-center bg-gray-100 text-red-800 font-bold">
+                <div className="w-[10%] p-9 flex ml-4 flex-col items-center justify-center bg-gray-100 text-red-800 font-bold">
                   <div>{weekday[index]} </div>
                   <div>{formattedDate}</div>
                 </div>
-                <div className="w-[80%] m-3">
+                <div className="w-[80%] mx-3">
                   {isPastDate ? (
-                    <label className="p-7">Past</label>
+                    <label className="p-9 flex justify-center items-center">Past</label>
                   ) : (
-                    weeklyWorkingTimes.map((time, index) => (
-                      <label className="p-7" key={index}>
-                        <input className="" type="checkbox" />
-                        {displayTimeInSelectedTimezone(time)}
-                      </label>
-                    ))
+                    <div className="grid grid-cols-8 mb-5 border border-gray-300 p-2">
+                      {weeklyWorkingTimes.map((time, index) => (
+                        <label className="px-10 flex justify-center items-center" key={index}>
+                          <input className="" type="checkbox" />
+                          {displayTimeInSelectedTimezone(time)}
+                        </label>
+                      ))}
+                    </div>
                   )}
                 </div>
+
               </div>
             );
           })}
         </div>
       </div>
       {/* Working Day Section Completed */}
+
     </div>
   );
 };

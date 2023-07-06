@@ -1,14 +1,10 @@
 
 import './App.css';
-import NewFile from './NewFile';
-import Workfile from './Workfile';
-
-
+import Workfile from './main/Assignment';
 
 function App() {
   return (
     <div >
-      {/* <NewFile /> */}
       <Workfile />
     </div>
   );
