@@ -1,18 +1,15 @@
 
 import './App.css';
 import NewFile from './NewFile';
-import Header from './components/Header';
-// import Workfile from './Workfile';
-import Timezone from './components/Timezone';
-import WorkingDays from './components/WorkingDays';
+import Workfile from './Workfile';
+
+
 
 function App() {
   return (
     <div >
-      <Header />
-      <Timezone />
-      <WorkingDays />
-      <NewFile />
+      {/* <NewFile /> */}
+      <Workfile />
     </div>
   );
 }

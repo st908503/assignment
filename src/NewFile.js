@@ -1,108 +1,124 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
-const NewFile = () => {
-    const [startDate, setStartDate] = useState(moment());
-    const [selectedTimezone, setSelectedTimezone] = useState('UTC+0');
-    const [weeklyWorkingDays, setWeeklyWorkingDays] = useState([]);
-    const [weeklyWorkingTimes, setWeeklyWorkingTimes] = useState([]);
+const WorkFile = () => {
+  // const [startDate, setStartDate] = useState(moment());
+  const [selectedTimezone, setSelectedTimezone] = useState('UTC+0');
+  const [weeklyWorkingDays, setWeeklyWorkingDays] = useState([]);
+  const [weeklyWorkingTimes, setWeeklyWorkingTimes] = useState([]);
 
-    useEffect(() => {
-        loadWeeklyData(startDate);
-    }, [startDate]);
+  const [selectedDate, setSelectedDate] = useState(moment().startOf('isoWeek').add(4, 'days').utc());
+  const [timezone, setTimezone] = useState('UTC');
 
-    const loadWeeklyData = (date) => {
-        const startOfWeek = date.startOf('week');
-        const endOfWeek = date.endOf('week');
-        const days = [];
-        const times = [];
+  const handleChangeDate = (direction) => {
+    setSelectedDate(selectedDate.clone().add(direction, 'week'));
+  };
 
-        for (let day = startOfWeek.clone(); day.isSameOrBefore(endOfWeek); day.add(1, 'day')) {
-            days.push(day.format('YYYY-MM-DD'));
-        }
+  const formattedSelectedDate = selectedDate.tz(timezone).format('MMMM Do, YYYY');
+  const today = moment().tz(timezone).startOf('day');
+  const isPastDate = selectedDate.isBefore(today);
 
-        for (let time = moment().startOf('day').hour(8); time.isSameOrBefore(moment().startOf('day').hour(23)); time.add(1, 'hour')) {
-            times.push(time.format('HH:mm'));
-        }
+  const startOfWeekday = moment().startOf('isoWeek').add(2, 'days');
+  const weekday = [];
 
-        setWeeklyWorkingDays(days);
-        setWeeklyWorkingTimes(times);
-    };
+  for (let i = 0; i < 7; i++) {
+    weekday.push(startOfWeekday.clone().add(i - 3, 'days').format('ddd'));
+  }
+  useEffect(() => {
+    loadWeeklyData(selectedDate);
+  }, [selectedDate]);
 
-    const handlePreviousWeek = () => {
-        setStartDate(startDate.clone().subtract(1, 'week'));
-    };
+  const loadWeeklyData = (date) => {
+    const startOfWeek = date.clone().startOf('week');
+    const endOfWeek = date.clone().endOf('week');
+    const days = [];
+    const times = [];
 
-    const handleNextWeek = () => {
-        setStartDate(startDate.clone().add(1, 'week'));
-    };
+    for (let day = startOfWeek.clone(); day.isSameOrBefore(endOfWeek); day.add(1, 'day')) {
+      days.push(day.format('YYYY-MM-DD'));
+    }
 
-    const handleTimezoneChange = (e) => {
-        setSelectedTimezone(e.target.value);
-    };
+    for (let time = moment().startOf('day').hour(8); time.isSameOrBefore(moment().startOf('day').hour(23)); time.add(0.5, 'hour')) {
+      times.push(time.format('HH:mm'));
+    }
 
-    const displayTimeInSelectedTimezone = (time) => {
-        return moment(time, 'HH:mm').tz(selectedTimezone).format('HH:mm');
-    };
+    setWeeklyWorkingDays(days);
+    setWeeklyWorkingTimes(times);
+  };
 
-    return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <h1 className="text-4xl mb-4">Weekly Schedule</h1>
+  const handleTimezoneChange = (e) => {
+    setSelectedTimezone(e.target.value);
+  };
 
-            <div className="flex items-center mb-4">
-                <button
-                    className="px-4 py-2 mr-2 bg-blue-500 text-white rounded"
-                    onClick={handlePreviousWeek}
-                >
-                    Previous Week
-                </button>
-                <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
-                    onClick={handleNextWeek}
-                >
-                    Next Week
-                </button>
-            </div>
+  const displayTimeInSelectedTimezone = (time) => {
+    return moment(time, 'HH:mm').tz(selectedTimezone).format('HH:mm');
+  };
 
-            <div className="mb-4">
-                <label htmlFor="timezone" className="mr-2">
-                    Select Timezone:
-                </label>
-                <select
-                    id="timezone"
-                    value={selectedTimezone}
-                    onChange={handleTimezoneChange}
-                >
-                    <option value="UTC+0">UTC+0</option>
-                    <option value="America/New_York">America/New_York</option>
-                    {/* Add more timezones as needed */}
-                </select>
-            </div>
-
-            <table className="border-collapse">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        {weeklyWorkingTimes.map((time) => (
-                            <th key={time}>{displayTimeInSelectedTimezone(time)}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {weeklyWorkingDays.map((day) => (
-                        <tr key={day}>
-                            <td>{day}</td>
-                            {weeklyWorkingTimes.map((time) => (
-                                <td key={time}>
-                                    <input type="checkbox" />
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+  return (
+    <div>
+      {/* Week and date section */}
+      <div className='flex justify-between mx-5 my-1 py-2 border border-gray-300'>
+        <div className='flex cursor-pointer '>
+          <span><ArrowLeftIcon className='text-blue-600 -mr-2' /></span>
+          <p onClick={() => handleChangeDate(-1)} className='text-blue-600 bg-gray-100 px-1 rounded'>Previous Week</p>
         </div>
-    );
+        <div>
+          <p>{formattedSelectedDate}</p>
+        </div>
+        <div className='flex cursor-pointer'>
+          <p onClick={() => handleChangeDate(1)} className='text-blue-600 bg-gray-100 px-1 rounded'>Next Week</p>
+          <span><ArrowRightIcon className='text-blue-600 -ml-2' /></span>
+        </div>
+      </div>
+      {/* Week and date section end */}
+
+      {/* Time zone section */}
+      <div className='flex flex-col px-5 mt-5'>
+        <label className='font-bold' htmlFor="timezone">Timezone:</label>
+        <select
+          className='mt-2 outline-none border border-gray-300 py-2'
+          id="timezone"
+          value={selectedTimezone}
+          onChange={handleTimezoneChange}
+        >
+          <option value="UTC+0">UTC+0</option>
+          <option value="America/New_York">America/New_York</option>
+        </select>
+      </div>
+
+      {/* Time zone section end */}
+
+      {/* Working Day Section */}
+      <div className="flex border border-collapse m-5 border-gray-300 py-2 px-2">
+        <div>
+          {weeklyWorkingDays.map((day, index) => {
+            const formattedDate = moment(day).format('MM/DD');
+            return (
+              <div key={index} className="flex">
+                <div className="w-[6%] flex ml-4 flex-col items-center justify-center bg-gray-100 text-red-800 font-bold">
+                  <div>{weekday[index]} </div>
+                  <div>{formattedDate}</div>
+                </div>
+                <div className="w-[80%] m-3">
+                  {isPastDate ? (<label className="p-7">Past</label>) : (
+                    weeklyWorkingTimes.map((time, index) => (
+                      <label className="p-7" key={index}>
+                        <input className="" type="checkbox" />
+                        {displayTimeInSelectedTimezone(time)}
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {/* Working Day Section Completed */}
+    </div>
+  );
 };
 
-export default NewFile;
+export default WorkFile;
